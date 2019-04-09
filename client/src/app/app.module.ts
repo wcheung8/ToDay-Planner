@@ -13,6 +13,9 @@ import { AuthenticationService } from './authentication.service';
 import { AuthGuardService } from './auth-guard.service';
 import { CreatePlanComponent } from './create-plan/create-plan.component';
 import { ViewPlanComponent } from './view-plan/view-plan.component';
+import {MatButtonModule} from "@angular/material/button";
+import {MatIconModule} from '@angular/material/icon';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -37,6 +40,9 @@ const routes: Routes = [
     BrowserModule,
     FormsModule,
     HttpClientModule,
+    MatButtonModule,
+    MatIconModule,
+    FontAwesomeModule,
     RouterModule.forRoot(routes),
   ],
   providers: [
