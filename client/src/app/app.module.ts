@@ -43,7 +43,7 @@ const routes: Routes = [
     GooglePlaceModule,
     RouterModule.forRoot(routes),
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyBXgXOV2JgIyiu2pxfMrErlNaQpylAASjY'
+      apiKey: '_'
     })
   ],
   providers: [

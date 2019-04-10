@@ -1,6 +1,4 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {GooglePlaceDirective} from "ngx-google-places-autocomplete";
-import {Address} from "ngx-google-places-autocomplete/objects/address";
 
 @Component({
   selector: 'app-create-plan',
@@ -27,6 +25,10 @@ export class CreatePlanComponent implements OnInit {
 
   submit() {
 
+  }
+
+  reset() {
+    this.stops= [];
   }
 
   ngOnInit() {
