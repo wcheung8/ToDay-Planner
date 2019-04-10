@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-
+import { GooglePlaceModule } from "ngx-google-places-autocomplete";
 import { AppComponent } from './app.component';
 import { ProfileComponent } from './profile/profile.component';
 import { LoginComponent } from './login/login.component';
@@ -13,9 +13,9 @@ import { AuthenticationService } from './authentication.service';
 import { AuthGuardService } from './auth-guard.service';
 import { CreatePlanComponent } from './create-plan/create-plan.component';
 import { ViewPlanComponent } from './view-plan/view-plan.component';
-import {MatButtonModule} from "@angular/material/button";
-import {MatIconModule} from '@angular/material/icon';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MaterialModule } from './material.module';
+import { AgmCoreModule } from '@agm/core';
+
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -39,11 +39,12 @@ const routes: Routes = [
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule,
-    MatButtonModule,
-    MatIconModule,
-    FontAwesomeModule,
+    HttpClientModule,MaterialModule,
+    GooglePlaceModule,
     RouterModule.forRoot(routes),
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyBXgXOV2JgIyiu2pxfMrErlNaQpylAASjY'
+    })
   ],
   providers: [
     AuthenticationService,

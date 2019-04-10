@@ -1,4 +1,52 @@
-<div class="container">
+<mat-accordion>
+  <mat-expansion-panel *ngFor="let stop of stops, index as i">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Activity {{i+1}}
+      </mat-panel-title>
+      <mat-panel-description>
+        {{stop.name == "" ? stop.type : stop.name + " (" + stop.type + ")"}}
+      </mat-panel-description>
+    </mat-expansion-panel-header>
 
-  
+    <mat-card-content>
+
+
+      <div style="display: flex; justify-content: center;">
+        <mat-form-field>
+          <mat-select placeholder="Activity Type" [(ngModel)]="stop.type">
+            <mat-option *ngFor="let type of types" [value]="type">
+              {{type}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput placeholder="Location" ngx-google-places-autocomplete [(ngModel)]="stop.address"
+                 [options]='options'
+                 (onAddressChange)="stop.name=$event.name;
+                 stop.location = $event.geometry.location;"/>
+        </mat-form-field>
+
+      </div>
+      <div *ngIf="stop.location">
+
+        <agm-map [latitude]="stop.location.lat()" [longitude]="stop.location.lng()" [zoom]="15">
+          <agm-marker
+            [latitude]="stop.location.lat()"
+            [longitude]="stop.location.lng()"
+          >
+          </agm-marker>
+        </agm-map>
+      </div>
+
+    </mat-card-content>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<div style="display: flex; justify-content: center;">
+
+  <button mat-raised-button (click)="addStop()">+ Add New Activity</button>
+  <button mat-raised-button (click)="reset()">Reset</button>
+  <button mat-raised-button (click)="submit()">Submit</button>
 </div>
