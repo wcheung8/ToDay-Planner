@@ -22,7 +22,7 @@
         </mat-form-field>
 
         <mat-form-field>
-          <input matInput placeholder="Location" ngx-google-places-autocomplete [(ngModel)]="stop.address"
+          <input matInput placeholder="Location" ngx-google-places-autocomplete
                  [options]='options'
                  (onAddressChange)="stop.name=$event.name;
                  stop.location = $event.geometry.location;"/>
@@ -45,7 +45,6 @@
 </mat-accordion>
 
 <div style="display: flex; justify-content: center;">
-
   <button mat-raised-button (click)="addStop()">+ Add New Activity</button>
   <button mat-raised-button (click)="reset()">Reset</button>
   <button mat-raised-button (click)="submit()">Submit</button>
