@@ -17,7 +17,7 @@ const httpOptions = {
 })
 
 export class CreatePlanComponent implements OnInit {
-
+  city;
   stops = [];
 
   types = ["Any", "Attraction", "Sightseeing", "Food"]
@@ -26,14 +26,14 @@ export class CreatePlanComponent implements OnInit {
   };
   log = "";
 
-  postUrl = "/api/login"
+  postUrl = "/api/plan"
 
   constructor(private http: HttpClient) {
 
   }
 
   addStop() {
-    this.stops.push({type: "Any", location: "", name: ""});
+    this.stops.push({type: "Any"});
   }
 
   submit() {
@@ -42,7 +42,7 @@ export class CreatePlanComponent implements OnInit {
   }
 
   getPlan() {
-    return this.http.post<any[]>(this.postUrl, this.stops, httpOptions)
+    return this.http.post<any[]>(this.postUrl, {stops: this.stops}, httpOptions)
       .pipe(
         catchError(this.handleError)
       );
@@ -50,6 +50,7 @@ export class CreatePlanComponent implements OnInit {
 
   reset() {
     this.stops = [];
+    this.city = undefined;
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -68,6 +69,57 @@ export class CreatePlanComponent implements OnInit {
       'Something bad happened; please try again later.');
   };
 
+  checkDefined(x) {
+    return typeof x === 'undefined'
+  }
+
+  getCityFromPosition(position) {
+
+    var lat = position.coords.latitude;
+    var lng = position.coords.longitude;
+    return this.http.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyDO2_utkAF8Lop0EWQkHlK85ix81YAxtv4")
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
   ngOnInit() {
+    if (window.navigator && window.navigator.geolocation) {
+      window.navigator.geolocation.getCurrentPosition(
+        position => {
+          this.getCityFromPosition(position).subscribe(info => {
+
+            for (var i = 0; i < info.results.length; i++) {
+
+              var result = info.results[i];
+
+              for (var j = 0; i < result.address_components.length; j++) {
+
+                var component = result.address_components[j];
+                if (component.types.includes("locality")) {
+                  this.city = component.long_name;
+                  return
+                }
+              }
+            }
+          });
+          ;
+        },
+        error => {
+          switch (error.code) {
+            case 1:
+              console.log('Permission Denied');
+              break;
+            case 2:
+              console.log('Position Unavailable');
+              break;
+            case 3:
+              console.log('Timeout');
+              break;
+          }
+        }
+      );
+    }
+    ;
   }
 }
