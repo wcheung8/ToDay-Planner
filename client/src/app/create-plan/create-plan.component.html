@@ -4,16 +4,16 @@
   </h1>
 </div>
 
-<mat-toolbar *ngIf="checkDefined(city)">
+<mat-toolbar *ngIf="notDefined(city)">
   <mat-toolbar-row>
     Enter a city or accept location services:
     <mat-form-field>
-      <input matInput #box matInput (keyup.enter)="city = box.value"/>
+      <input value="Atlanta" matInput #box matInput (keyup.enter)="city = box.value"/>
     </mat-form-field>
   </mat-toolbar-row>
 </mat-toolbar>
 
-<mat-card *ngIf="!checkDefined(city)">
+<mat-card *ngIf="!notDefined(city)">
 
 
   <mat-accordion>
@@ -23,7 +23,7 @@
           Activity {{i+1}}
         </mat-panel-title>
         <mat-panel-description>
-          {{checkDefined(stop.name) ? stop.type : stop.name + " (" + stop.type + ")"}}
+          {{notDefined(stop.name) ? "("+stop.type+")" : stop.name }}
         </mat-panel-description>
       </mat-expansion-panel-header>
 
@@ -43,16 +43,17 @@
             <input matInput placeholder="Location" ngx-google-places-autocomplete
                    [options]='options'
                    (onAddressChange)="stop.name=$event.name;
-                 stop.location = $event.geometry.location;"/>
+                 stop.lat = $event.geometry.location.lat();
+                  stop.lng = $event.geometry.location.lng();"/>
           </mat-form-field>
 
         </div>
-        <div *ngIf="stop.location">
+        <div *ngIf="stop.lat && stop.lng">
 
-          <agm-map [latitude]="stop.location.lat()" [longitude]="stop.location.lng()" [zoom]="15">
+          <agm-map [scrollwheel]="null" [mapDraggable]="false" [latitude]="stop.lat" [longitude]="stop.lng" [zoom]="15">
             <agm-marker
-              [latitude]="stop.location.lat()"
-              [longitude]="stop.location.lng()"
+              [latitude]="stop.lat"
+              [longitude]="stop.lng"
             >
             </agm-marker>
           </agm-map>
@@ -61,6 +62,24 @@
       </mat-card-content>
     </mat-expansion-panel>
   </mat-accordion>
+
+
+  <hr>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let stop of directions, index as i">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Directions from 1 to 1
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-card-content>
+
+
+      </mat-card-content>
+    </mat-expansion-panel>
+
+  </mat-accordion>
+
 
   <div style="display: flex; justify-content: center;">
     <button mat-raised-button (click)="addStop()">+ Add New Activity</button>
