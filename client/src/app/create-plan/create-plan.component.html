@@ -65,15 +65,33 @@
 
 
   <hr>
+
   <mat-accordion>
-    <mat-expansion-panel *ngFor="let stop of directions, index as i">
+    <mat-expansion-panel *ngFor="let pair of legs, index as i">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          Directions from 1 to 1
+          Directions from {{pair[0].name}} to {{pair[1].name}}
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
+        <ul>
+          <li *ngFor="let step of directions.routes[0].legs[i].steps, index as j">
+            <div [innerHTML]="directions.routes[0].legs[i].steps[j].instructions"></div>
+          </li>
+        </ul>
+        <hr>
+        <agm-map [latitude]="(pair[0].lat + pair[1].lat) / 2"
+                 [longitude]="(pair[0].lng + pair[1].lng) / 2">
+          <agm-direction *ngIf="pair" [origin]="pair[0].addr" [destination]="pair[1].addr">
+          </agm-direction>
+        </agm-map>
 
+
+        <agm-map [hidden]="true" *ngIf="i == legs.length-1" [latitude]="(pair[0].lat + pair[1].lat) / 2"
+                 [longitude]="(pair[0].lng + pair[1].lng) / 2">
+          <agm-direction [origin]="pair[0].addr" [destination]="pair[1].addr">
+          </agm-direction>
+        </agm-map>
 
       </mat-card-content>
     </mat-expansion-panel>

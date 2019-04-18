@@ -3,6 +3,7 @@ import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {HttpHeaders} from '@angular/common/http';
 import {throwError} from "rxjs/internal/observable/throwError";
 import {catchError} from 'rxjs/operators';
+//import {google} from "@agm/core/services/google-maps-types";
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -55,10 +56,10 @@ function findDirections(stops, directionsService, travelMode = 'DRIVING') {
       if (status === 'OK') {
         resolve(results);
       } else {
-        reject(new Error('Couldnt\'t find the location '));
+        reject(new Error('Couldnt\'t find the location '+ status));
       }
-    })
-  })
+    });
+  });
 }
 
 function getAllDirections(directionsService, plans, travelMode = 'DRIVING') {
@@ -79,7 +80,9 @@ export class CreatePlanComponent implements OnInit {
   city;
   lng;
   lat;
-  stops = [{type: "any"}];
+  stops = [{type: "any"}, {type: "any"}];
+  legs;
+  directions;
   types = attraction_types;
   log = "";
 
@@ -215,19 +218,42 @@ export class CreatePlanComponent implements OnInit {
       Array.prototype.push.apply(allPlans, dp[i].plans);
     }
 
+    // get google maps directions
     let directionsService = new google.maps.DirectionsService();
     let locations = getAllDirections(directionsService, allPlans, "DRIVING");
 
     let directions = await Promise.all(locations);
 
-
     // return best route based on google maps time estimate
-
     let best = -1;
-    let bestCost = 999;
+    let bestTime = 9999999;
+
+    for (let i = 0; i < directions.length; i++) {
+
+      let direction = directions[i];
+      let time = 0;
+      let route;
+
+      if (this.notDefined(direction.routes[0])) {
+        route = direction.routes;
+      } else {
+        route = direction.routes[0];
+      }
+
+      for (let j = 0; j < direction.routes[0].legs.length; j++) {
+        time += direction.routes[0].legs[j].duration.value;
+      }
+
+      console.log(time)
+      if (bestTime > time) {
+        best = i;
+        bestTime = time;
+      }
+
+    }
 
 
-    return allPlans[0].route
+    return [allPlans[best].route, directions[best]]
 
   }
 
@@ -239,12 +265,28 @@ export class CreatePlanComponent implements OnInit {
         catchError(this.handleError)
       ).toPromise()
 
-    this.createPlan(attractions);
+    let r = await this.createPlan(attractions);
+    this.stops = r[0]
+
+    let legs = []
+
+    for (let i = 0; i < this.stops.length - 1; i++) {
+      legs.push([this.stops[i], this.stops[i + 1]])
+    }
+
+    this.legs = legs;
+    this.directions = r[1];
+
+
+    console.log(r)
 
   }
 
   reset() {
-    this.stops = [{type: "any"}];
+    this.stops = [{type: "any"}, {type: "any"}];
+
+    this.legs = []
+    this.directions = [];
   }
 
   private handleError(error: HttpErrorResponse) {
