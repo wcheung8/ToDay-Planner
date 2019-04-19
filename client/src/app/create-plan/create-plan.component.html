@@ -8,7 +8,7 @@
   <mat-toolbar-row>
     Enter a city or accept location services:
     <mat-form-field>
-      <input value="Atlanta" matInput #box matInput (keyup.enter)="city = box.value"/>
+      <input matInput #box matInput (keyup.enter)="city = box.value"/>
     </mat-form-field>
   </mat-toolbar-row>
 </mat-toolbar>
@@ -44,7 +44,8 @@
                    [options]='options'
                    (onAddressChange)="stop.name=$event.name;
                  stop.lat = $event.geometry.location.lat();
-                  stop.lng = $event.geometry.location.lng();"/>
+                  stop.lng = $event.geometry.location.lng();
+                  stop.addr = $event.adr_address;"/>
           </mat-form-field>
 
         </div>
@@ -68,10 +69,13 @@
 
   <mat-accordion>
     <mat-expansion-panel *ngFor="let pair of legs, index as i">
-      <mat-expansion-panel-header>
+      <mat-expansion-panel-header class="right-aligned-header">
         <mat-panel-title>
           Directions from {{pair[0].name}} to {{pair[1].name}}
         </mat-panel-title>
+        <mat-panel-description>
+          {{directions.routes[0].legs[i].duration.text}}
+        </mat-panel-description>
       </mat-expansion-panel-header>
       <mat-card-content>
         <ul>

@@ -3,7 +3,7 @@ import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {HttpHeaders} from '@angular/common/http';
 import {throwError} from "rxjs/internal/observable/throwError";
 import {catchError} from 'rxjs/operators';
-//import {google} from "@agm/core/services/google-maps-types";
+import {google} from "@agm/core/services/google-maps-types";
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -24,9 +24,9 @@ const attraction_types = ['any',
 
 const postUrl = "/api/plan";
 const databaseUrl = "https://todayplanner.herokuapp.com/attraction/all";
-const APIkey = "";
-const beam_size = 1;
-const query_size = 1;
+const APIkey = "__________________";
+const beam_size = 2;
+const query_size = 5;
 
 function dist(x1, y1, x2, y2) {
   var a = x1 - x2;
@@ -56,7 +56,8 @@ function findDirections(stops, directionsService, travelMode = 'DRIVING') {
       if (status === 'OK') {
         resolve(results);
       } else {
-        reject(new Error('Couldnt\'t find the location '+ status));
+        console.log(status)
+        reject(new Error('Couldnt\'t find the location ' + status));
       }
     });
   });
@@ -103,20 +104,19 @@ export class CreatePlanComponent implements OnInit {
     for (var i in attractions) {
       Array.prototype.push.apply(any, attractions[i]);
     }
-    attractions['any'] = any;
+    attractions['any'] = any.slice(0,4);
 
 
     // init start positions
     let stop = this.stops[0];
 
     let options = attractions[stop.type];
-    console.log(options)
 
     //check empty
     if (!this.notDefined(stop.name)) {
       options = [stop];
-      console.log(stop);
     }
+    console.log(options)
 
     let dp = new Array(options.length);
     for (let t = 0; t < options.length; t++) {
@@ -258,6 +258,9 @@ export class CreatePlanComponent implements OnInit {
   }
 
   async submit() {
+    var start = performance.now();
+
+//do your things
 
     var payload = {cityName: this.city, limit: query_size};
     let attractions = await this.http.post(databaseUrl, payload, httpOptions)
@@ -280,6 +283,9 @@ export class CreatePlanComponent implements OnInit {
 
     console.log(r)
 
+    var end = performance.now();
+    var duration = end - start;
+    console.log("duraction:" + duration)
   }
 
   reset() {
