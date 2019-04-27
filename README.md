@@ -13,3 +13,6 @@
 
 ## Primary Code
 Most of the driving code lies in `client/src/app/create-plan/create-plan.component.ts` and `client/src/app/create-plan/create-plan.component.html`
+
+## Live Demo
+![](demo.gif)
